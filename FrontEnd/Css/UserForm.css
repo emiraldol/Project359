@@ -1,0 +1,325 @@
+/*Fixed the css from the ugly previous body here mostly from sites and chat..I hate css sorry :(*/
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(
+    to bottom,
+    rgba(1, 213, 241, 0.8),
+    rgba(255, 0, 0, 0.1)
+  );
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+input[type='number'] {
+  width: 80px;
+  padding: 5px;
+  margin: 5px 0;
+}
+
+/* Style the radio buttons to be inline */
+input[type='radio'] {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+/* Align the labels next to radio buttons */
+label {
+  margin-right: 15px;
+}
+
+/* Optional: Add some spacing between the radio buttons */
+label[for='simple'],
+label[for='driver'] {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+/* Styling for the form elements */
+input[type='text'],
+input[type='email'],
+input[type='password'],
+input[type='date'],
+select {
+  width: 100%;
+  padding: 8px;
+  margin: 8px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+button,
+input[type='button'] {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+button:hover,
+input[type='button']:hover {
+  background-color: #45a049;
+}
+
+h1#welcome {
+  text-align: center;
+  color: #333;
+  font-size: 28px;
+  margin: 40px 0 20px;
+}
+
+.form {
+  max-width: 600px;
+  margin: 40px auto;
+  background-color: linear-gradient(
+    to bottom,
+    rgba(1, 213, 241, 0.8),
+    rgba(255, 0, 0, 0.1)
+  );
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/**Specicif inputs*/
+input[type='text'],
+input[type='email'],
+input[type='password'],
+input[type='date'],
+select,
+textarea {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 18px;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+input[type='text']:focus,
+input[type='email']:focus,
+input[type='password']:focus,
+input[type='date']:focus,
+select:focus,
+textarea:focus {
+  border-color: #66bb6a;
+}
+
+input[type='radio'],
+input[type='checkbox'] {
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+input[type='button'] {
+  background-color: #00c2fd;
+  color: #fff;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+input[type='button']:hover {
+  background-color: #e6b800;
+}
+
+input[type='submit'] {
+  background-color: #66bb6a;
+  color: #fff;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+input[type='submit']:hover {
+  background-color: #5a9d57;
+}
+
+#strength {
+  background-color: #f70000;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+span#message {
+  color: #d9534f;
+  font-size: 14px;
+  display: block;
+  margin-bottom: 15px;
+}
+
+#output {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#extra {
+  display: none;
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #f7eddc;
+  border-radius: 10px;
+}
+
+#errormsg {
+  color: #d9534f;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+#Map {
+  height: 600px;
+  width: 700px;
+}
+
+#extra label {
+  display: block;
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+#extra input[type='radio'] {
+  margin-right: 5px;
+}
+
+#extra input[type='radio'] + label {
+  margin-right: 15px;
+  font-weight: normal;
+  color: #333;
+}
+
+#extra input[type='number'] {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+}
+
+#extra input[type='number']:hover,
+#extra input[type='number']:focus {
+  border-color: #5cb85c;
+  outline: none;
+}
+
+#agreement {
+  font-size: 14px;
+  color: #333;
+  margin-top: 20px;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+/* Start Footer */
+footer {
+  background-color: #2c2c2c;
+  color: #ffffff;
+  font-size: 15px;
+  text-align: center;
+  padding: 20px 0;
+  border-radius: 180px;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footer-left,
+.footer-center,
+.footer-right {
+  flex: 1;
+}
+
+.footer-left,
+.footer-right {
+  max-width: 250px;
+}
+
+.footer-left h3,
+.footer-center h3,
+.footer-right h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.footer-left p,
+.footer-right p {
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.footer-left ul,
+.footer-right ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.footer-left li,
+.footer-right li {
+  margin-bottom: 5px;
+}
+
+.footer-left a,
+.footer-right a {
+  color: #a9cca7;
+  text-decoration: none;
+}
+
+.footer-left a:hover,
+.footer-right a:hover {
+  color: white;
+}
+
+.images-links-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  align-items: center;
+}
+
+.images-links-container img {
+  width: 100px;
+  height: 100px;
+}
+
+footer a:link {
+  color: #a9cca7;
+}
+
+footer a:visited {
+  color: #a9cce3;
+}
+
+footer a:hover {
+  color: white;
+}
+
+footer a:active {
+  color: #d9534f;
+}

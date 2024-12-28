@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Firefighter Game</title>
+  <link rel="icon" type="image/png" href="/Sources/logo.png"> 
+  <style>
+    html, body {
+      margin: 0;
+      overflow: hidden;
+      height: 100%;
+    }
+    body {
+      margin: 0;
+    }
+    canvas {
+      display: block;
+      background-color: #7af82bac; /* Light blue sky */
+    }
+    .top-buttons {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 10;
+    }
+    .top-buttons button {
+      margin: 5px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      background-color: #007BFF;
+      color: white;
+    }
+    .top-buttons button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="top-buttons">
+    <button onclick="goHome()">Home</button>
+    <button onclick="restartGame()">Restart</button>
+  </div>
+
+  <canvas id="gameCanvas"></canvas>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Resize canvas to fill window
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // Load images for the fire and the firefighter
+    const fireImage = new Image();
+    const firefighterImage = new Image();
+    fireImage.src = '../Sources/fire.png'; // Replace with your image URL for fire
+    firefighterImage.src = '../Sources/firefighter.webp'; // Replace with your image URL for firefighter
+
+    // Game objects
+    const player = {
+      x: canvas.width / 2,
+      y: canvas.height / 2,
+      size: 50,
+      speed: 5,
+      image: firefighterImage,
+    };
+
+    let fire = {
+      x: Math.random() * (canvas.width - 50) + 25,
+      y: Math.random() * (canvas.height - 50) + 25,
+      size: 30,
+      image: fireImage,
+      health: 5, // Fire health (number of water hits to extinguish)
+      isExtinguished: false,
+    };
+
+    const water = {
+      x: null,
+      y: null,
+      size: 10,
+      speed: 7,
+      isActive: false,
+    };
+
+    // Movement keys
+    const keys = {
+      w: false,
+      a: false,
+      s: false,
+      d: false,
+      space: false,
+    };
+
+    const parks = [
+      { x: 1150, y: 0, width: 300, height: 200, color: '#228B22' }, 
+      { x: 0, y: 450, width: 185, height: 300, color: '#228B22' },
+      { x: 465, y: 450, width: 135, height: 300, color: '#228B22' }, 
+      { x: 740, y: 350, width: 80, height: 40, color: '#FFFF00'},
+      { x: 750, y: 360, width: 80, height: 40, color: 'rgb(255, 0, 0)'},
+    ];
+
+    const lakes = [
+      { x: 35, y: 535, width: 110, height: 100, color: '#1E90FF' }, 
+      { x: 1200, y: 2, width: 200, height: 150, color: '#1E90FF' }, 
+    ];
+
+    const squares = [
+      { x: 720, y: 50, width: 160, height: 150, color: '#D3D3D3' }, // Square (Γκρι)
+      { x: 0, y: 250, width: 185, height: 150, color: '#D3D3D3' }, // Square (Γκρι)
+      { x: 1175, y: 480, width: 220, height: 220, color: '#D3D3D3' }, // Square (Γκρι)
+    ];
+
+    function drawSquares() {
+      for (let square of squares) {
+        ctx.fillStyle = square.color;
+        ctx.fillRect(square.x, square.y, square.width, square.height);
+        ctx.fillStyle = '#A9A9A9'; 
+        ctx.fillRect(square.x + 10, square.y + 10, square.width - 20, square.height - 20);
+      }
+    }
+
+    function drawParksAndLakes() {
+      for (let park of parks) {
+        ctx.fillStyle = park.color;
+        ctx.fillRect(park.x, park.y, park.width, park.height);
+      }
+
+      for (let lake of lakes) {
+        ctx.fillStyle = lake.color;
+        ctx.fillRect(lake.x, lake.y, lake.width, lake.height);
+      }
+    }
+
+    let isGameOver = false; // Flag to track if the game is over
+    let successMessageShown = false; // To show the success message only once
+
+    const buildings = [
+      { x: 10, y: 30, width: 150, height: 150, color: '#8B8B8B', hasFire: false },
+      { x: 240, y: 10, width: 150, height: 180, color: '#A9A9A9', hasFire: false },
+      { x: 500, y: 30, width: 200, height: 150, color: '#B0B0B0', hasFire: false },
+      { x: 1250, y: 300, width: 250, height: 150, color: '#8B8B8B', hasFire: false },
+      { x: 240, y: 300, width: 150, height: 250, color: '#A9A9A9', hasFire: false },
+      { x: 850, y: 350, width: 150, height: 150, color: '#B0B0B0', hasFire: false },
+      { x: 900, y: 100, width: 180, height: 200, color: '#8B8B8B', hasFire: false },
+    ];
+
+    const roads = [
+      { x: 0, y: 200, width: canvas.width, height: 50 },
+      { x: 185, y: 0, width: 50, height: canvas.height },
+      { x: 415, y: 0, width: 50, height: canvas.height },
+      { x: 0, y: 400, width: canvas.width, height: 50 },
+      { x: 1125, y: 450, width: 50, height: canvas.height },
+      { x: 600, y: 200, width: 50, height: canvas.height },
+    ];
+
+    // Check if building overlaps with player
+    function checkBuildingCollision(x, y) {
+      for (let building of buildings) {
+        if (
+          x + player.size > building.x &&
+          x < building.x + building.width &&
+          y + player.size > building.y &&
+          y < building.y + building.height
+        ) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    // Modified function to allow water to pass only through the building with the fire
+    function checkWaterCollision() {
+      for (let building of buildings) {
+        if (
+          water.x + water.size > building.x &&
+          water.x < building.x + building.width &&
+          water.y + water.size > building.y &&
+          water.y < building.y + building.height
+        ) {
+          // If fire is in the building, allow water to pass and reduce fire health
+          if (building.hasFire) {
+            fire.health -= 1; // Reduce fire health when water hits a building with fire
+            water.isActive = false; // Stop water after it hits the building
+          } else {
+            water.isActive = false; // Block water from passing through other buildings
+          }
+        }
+      }
+    }
+
+    // Function to check if fire is inside a building
+    function checkFireInBuilding() {
+      for (let building of buildings) {
+        const isFireInBuilding = fire.x + fire.size > building.x &&
+                                 fire.x < building.x + building.width &&
+                                 fire.y + fire.size > building.y &&
+                                 fire.y < building.y + building.height;
+
+        // If fire is inside a building, mark that building as having fire
+        building.hasFire = isFireInBuilding;
+
+        if (isFireInBuilding) {
+          building.color = '#FF0000'; // Κόκκινο χρώμα για το κτήριο με φωτιά
+        } else {
+          building.color = '#A9A9A9'; // Επιστροφή στο αρχικό χρώμα
+        }
+      }
+    }
+
+    function checkPlayerFireCollision() {
+      const distance = Math.sqrt(
+        (player.x + player.size / 2 - fire.x - fire.size / 2) ** 2 +
+        (player.y + player.size / 2 - fire.y - fire.size / 2) ** 2
+      );
+
+      if (distance < player.size / 2 + fire.size / 2) {
+        alert("You've burned out! The game will restart from the beginning.");
+        resetGame();
+      }
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (isGameOver) return;
+      if (e.key === 'w') keys.w = true;
+      if (e.key === 'a') keys.a = true;
+      if (e.key === 's') keys.s = true;
+      if (e.key === 'd') keys.d = true;
+      if (e.key === ' ') keys.space = true;
+    });
+
+    window.addEventListener('keyup', (e) => {
+      if (isGameOver) return;
+      if (e.key === 'w') keys.w = false;
+      if (e.key === 'a') keys.a = false;
+      if (e.key === 's') keys.s = false;
+      if (e.key === 'd') keys.d = false;
+      if (e.key === ' ') keys.space = false;
+    });
+
+    function resetGame() {
+      isGameOver = true;
+      player.x = canvas.width / 2;
+      player.y = canvas.height / 2;
+      fire.x = Math.random() * (canvas.width - 50) + 25;
+      fire.y = Math.random() * (canvas.height - 50) + 25;
+      fire.health = 5; // Reset fire health
+      fire.isExtinguished = false;
+      water.isActive = false;
+      successMessageShown = false;
+      window.location.reload();
+    }
+
+    function goHome() {
+      window.location.href = "Home.html";
+    }
+
+    function restartGame() {
+      resetGame();
+    }
+
+    function drawBuildings() {
+      for (let building of buildings) {
+        ctx.fillStyle = building.color;
+        ctx.fillRect(building.x, building.y, building.width, building.height);
+
+        ctx.fillStyle = 'white';
+        let windowSize = 20;
+        for (let i = 0; i < building.width / windowSize; i++) {
+          for (let j = 0; j < building.height / windowSize; j++) {
+            ctx.fillRect(building.x + i * windowSize + 10, building.y + j * windowSize + 10, windowSize, windowSize);
+          }
+        }
+      }
+    }
+
+    function drawRoads() {
+      ctx.fillStyle = '#555555';
+      for (let road of roads) {
+        ctx.fillRect(road.x, road.y, road.width, road.height);
+      }
+
+      ctx.strokeStyle = 'white';
+      ctx.lineWidth = 5;
+      ctx.setLineDash([20, 15]);
+
+      for (let road of roads) {
+        if (road.height === 50) {
+          let centerY = road.y + road.height / 2;
+          ctx.beginPath();
+          ctx.moveTo(road.x, centerY);
+          ctx.lineTo(road.x + road.width, centerY);
+          ctx.stroke();
+        }
+      }
+
+      for (let road of roads) {
+        if (road.width === 50) {
+          let centerX = road.x + road.width / 2;
+          ctx.beginPath();
+          ctx.moveTo(centerX, road.y);
+          ctx.lineTo(centerX, road.y + road.height);
+          ctx.stroke();
+        }
+      }
+
+      ctx.setLineDash([]);
+    }
+
+    function gameLoop() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      drawRoads();
+      drawBuildings();
+      drawParksAndLakes();
+      drawSquares();
+
+      checkFireInBuilding(); // Check if the fire is inside a building
+
+      if (!isGameOver) {
+        if (keys.w && player.y > 0 && !checkBuildingCollision(player.x, player.y - player.speed)) {
+          player.y -= player.speed;
+        }
+        if (keys.a && player.x > 0 && !checkBuildingCollision(player.x - player.speed, player.y)) {
+          player.x -= player.speed;
+        }
+        if (keys.s && player.y < canvas.height - player.size && !checkBuildingCollision(player.x, player.y + player.speed)) {
+          player.y += player.speed;
+        }
+        if (keys.d && player.x < canvas.width - player.size && !checkBuildingCollision(player.x + player.speed, player.y)) {
+          player.x += player.speed;
+        }
+      }
+
+      if (keys.space && !water.isActive && !fire.isExtinguished) {
+        water.x = player.x + player.size / 2;
+        water.y = player.y + player.size / 2;
+        water.isActive = true;
+        const audio = new Audio('/Sources/mixkit-water-bubble-1317.wav');
+        audio.play();
+      }
+
+      if (water.isActive) {
+        const dx = fire.x - water.x;
+        const dy = fire.y - water.y;
+        const angle = Math.atan2(dy, dx);
+
+        water.x += Math.cos(angle) * water.speed;
+        water.y += Math.sin(angle) * water.speed;
+
+        const distance = Math.sqrt((water.x - fire.x) ** 2 + (water.y - fire.y) ** 2);
+        if (distance < fire.size) {
+          fire.health -= 1; // Reduce fire health
+          water.isActive = false;
+        }
+
+        checkWaterCollision(); // Check if water collides with any building
+      }
+
+      ctx.drawImage(player.image, player.x, player.y, player.size, player.size);
+
+      if (!fire.isExtinguished) {
+        ctx.drawImage(fire.image, fire.x, fire.y, fire.size, fire.size);
+
+        // Draw fire health bar above the fire
+        ctx.fillStyle = 'red';
+        ctx.fillRect(fire.x, fire.y - 10, fire.size, 6);
+        ctx.fillStyle = 'green';
+        ctx.fillRect(fire.x, fire.y - 10, (fire.size * fire.health) / 5, 6);
+      }
+
+      if (fire.health <= 0) {
+        fire.isExtinguished = true;
+      }
+
+      if (fire.isExtinguished) {
+        ctx.fillStyle = 'blue';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.font = '40px Arial'; 
+        ctx.fillStyle = 'white'; 
+        ctx.textAlign = 'center';
+        ctx.fillText('The fire is out! Well done!', canvas.width / 2, canvas.height / 2);
+        const audio = new Audio('/Sources/winner.mp3');
+        audio.play();
+        return;
+      }
+
+      if (water.isActive) {
+        ctx.beginPath();
+        ctx.arc(water.x, water.y, water.size, 0, Math.PI * 2);
+        ctx.fillStyle = 'blue';
+        ctx.fill();
+      }
+
+      checkPlayerFireCollision();
+
+      requestAnimationFrame(gameLoop);
+    }
+
+    fireImage.onload = () => {
+      firefighterImage.onload = () => {
+        gameLoop();
+      };
+    }
+
+    // Sound
+    function playSound() {
+        hoverSound.currentTime = 0;
+        hoverSound.play();
+    }
+  </script>
+</body>
+</html>

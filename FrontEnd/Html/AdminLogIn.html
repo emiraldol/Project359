@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fire Department - Admin Log In</title>
+    <script src="/Javascript/AdminLogIn.js" defer></script>
+    <link rel="stylesheet" href="/Css/AdminLogIn.css" />
+    <link rel="icon" type="image/png" href="/Sources/LogIn.png" />
+  </head>
+
+  <body class="bg-danger d-flex justify-content-center align-items-center vh-100">
+    <header>
+      <div id="Head2">
+        <h2>Admin Log In</h2>
+      </div>
+    </header>
+
+    <main>
+      <form class="center" onsubmit="submit_form();return false">
+        <div class="form-group">
+          <label for="username">Username:</label>
+          <input
+            type="username"
+            id="username"
+            name="username"
+            placeholder="Enter Username"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password:</label>
+          <input
+            type="password"
+            id="password"
+            placeholder="Enter Password"
+            required
+          />
+          <button
+            type="button"
+            onclick="password_view('password', 'eye1')"
+            class="eye"
+          >
+            <img
+              id="eye1"
+              src="/Sources/eye-slash.png"
+              alt="Toggle password visibility"
+              width="20"
+            />
+          </button>
+        </div>
+        <button id="button" type="submit">Log In</button>
+        <button id="button2" onclick="ReturnHome()">Home</button>
+      </form>
+    </main>
+
+    <footer class="footer">
+      <mark>Copyright © 2024 Fire Department csd5059 and csd5088</mark>
+    </footer>
+  </body>
+</html>
